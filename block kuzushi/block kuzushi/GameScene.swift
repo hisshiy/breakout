@@ -91,8 +91,8 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         //スコア、残機
         score = 0
         score_mag = 0
-        ballLife = 2
-        life = 1
+        ballLife = 4
+        life = 3
         showString = SKLabelNode()
         showString.text = ("残機:\(life)")
         showString.position = CGPointMake(self.size.width/2, self.size.height-showString.frame.height-20)
@@ -113,14 +113,14 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         deadzone.physicsBody?.contactTestBitMask = ballCategory
         
         //ブロック配置
-        for (var i:Int = 1; i <= block_col; i++){
-            for (var j:Int = 1; j <= 5; j++){
+        for (var i:Int = 1; i <= 5; i++){
+            for (var j:Int = 1; j <= 3; j++){
                 //四角形の作成
                  let block = SKSpriteNode(color: UIColor.redColor(), size: CGSizeMake(50, 20))
                 //ブロックの場所
                 //x座標：ループの回数×画面の横サイズ/ブロックの横の総数
                 //y座標：画面の縦サイズ−ループの回数×２×ブロックの高さ
-                let block_position = CGPointMake(CGFloat(i)*(self.size.width/CGFloat(block_row)), self.size.height-CGFloat(j)*2*(block_height+margin)-50)
+                let block_position = CGPointMake(270+CGFloat(i)*(self.size.width/CGFloat(block_row)-20), self.size.height-CGFloat(j)*2*(block_height+margin)-50)
                 //ブロックの名前
                 //block.name = "block"
                 //ブロックを決めた場所に移動
@@ -149,11 +149,11 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         //バーのx座標　バーのy座標
         x = CGRectGetMidX(self.frame);y = CGRectGetMidY(self.frame) - 300
         //バーの色、大きさ
-        bar = SKSpriteNode(color: UIColor.whiteColor(), size: CGSizeMake(500, 20))
+        bar = SKSpriteNode(color: UIColor.whiteColor(), size: CGSizeMake(100, 20))
         //バーの場所
         bar.position = CGPointMake(x, y)
         //SKPhysicsBodyを使用することで物理シミレーションの対象に
-        bar.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(500, 20))
+        bar.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(100, 20))
         //物体が接触しても動かないようにする
         bar.physicsBody?.dynamic = false
         //自身がどの物体と接触した場合に衝突させるかを判定する
@@ -161,7 +161,8 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         
         //ボール配置
         //ボールのx座標 ボールのy座標
-        bx = x;by = y+100
+        bx = x;
+        by = y+100
         //ボールの色、サイズ
         ball = SKShapeNode(circleOfRadius: en)
         ball.fillColor = UIColor.yellowColor()
@@ -194,7 +195,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         /**画面が表示された時に実行される**/
     override func didMoveToView(view: SKView) {
 
-        let abc = SKShapeNode(rectOfSize: CGSizeMake(510.0, 800.0))
+        let abc = SKShapeNode(rectOfSize: CGSizeMake(445, 800.0))
         // 線の太さを2.0に指定.
         abc.lineWidth = 2.0
         // 四角形の枠組みの剛体を作る.
@@ -210,15 +211,13 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
           self.addChild(bar)
         //ボールの配置
           self.addChild(ball)
-//        // フレームサイズを、ビューの境界と同じにします。
-//        self.size.width = view.bounds.size.width
-//        // エッジを作ってノードが画面からはみ出さないように
-//        self.physicsBody = SKPhysicsBody(edgeLoopFromRect: self.frame)
+        //エッジを作ってノードが画面からはみ出さないように
+            self.physicsBody = SKPhysicsBody(edgeLoopFromRect: self.frame)
         
     }
 
     
-    /**画面をタッチしたときに実行される**/
+    //画面をタッチしたときに実行される
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?){
             if(!loop){
                 bollidou()
@@ -262,7 +261,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         //残機を減らす
         ballLife = ballLife - 1
         life = life - 1
-        if(ballLife == 1){
+        if(life == 0){
             let newScene = OVER(size: self.scene!.size)
             newScene.scaleMode = SKSceneScaleMode.AspectFill
             self.view!.presentScene(newScene)
@@ -299,11 +298,11 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
                 second.node?.userData?.setObject(life, forKey: "life")
                 second.node?.alpha *= 0.5
                 if((second.node?.userData?.valueForKey("life") as! Int) < 1){
-                    //削除するs
+                    //削除する
                     second.node?.removeFromParent()
                     count++
                 }
-                if(count == 25){
+                if(count == 15){
                     let newScene = CLEAR(size: self.scene!.size)
                     newScene.scaleMode = SKSceneScaleMode.AspectFill
                     self.view!.presentScene(newScene)
